@@ -11,7 +11,7 @@ class cask:
     def __repr__(self):
         return '<Length: %d, Weight: %.1f>'%(self.Length, self.Weight);
 
-CaskDict = dict(); #dictionary with all the casks, indexed by their ID strings
+CasksProps = dict(); #dictionary with all the casks, indexed by their ID strings
 
 class stack: #to be used as a C like structure
     
@@ -46,7 +46,7 @@ class state:
     World = dict(); #Has all the nodes (including stacks) that exist in the form of edgeTo lists
     
     RobotPosition = 'EXIT';
-    RobotCask = '';
+    RobotCask = ''; #Empty string denotes lack of cask
     
     GCost = 0;
     
@@ -54,7 +54,7 @@ class state:
         return'<RobotPosition:%s,\nRobotCask:%s,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.Stacks);
         
     def insertToStack(self, StackID, CaskID):
-        C = CaskDict[CaskID];
+        C = CasksProps[CaskID];
         S = self.Stacks[StackID];
         
         if(S.LeftOverLength < C.Length):
@@ -63,7 +63,20 @@ class state:
             
         S.LeftOverLength = S.LeftOverLength - C.Length;
         S.Casks.append(CaskID);
+    
+    def removeFromStack(self, StackID):
+        S = self.Stacks[StackID];
         
+        if(not S.Casks):
+            raise(ValueError('Stack is empty'));
+        
+        CaskID = S.Casks.pop();
+        C = CasksProps[CaskID];
+        
+        S.LeftOverLength = S.LeftOverLength + C.Length;
+        
+        return CaskID;
+    
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
@@ -76,13 +89,31 @@ class state:
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
             if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
-                raise(ValueError('Operação inválida - op.Dest inválido'));
+                raise(ValueError('Invalid op - invalid op.Dest'));
             
             DestinationEdge = (self.World[self.RobotPosition])[op.Dest];
             self.RobotPosition = DestinationEdge.IDto;
-        #elif(op.OpType == 'LOAD'):
+        elif(op.OpType == 'LOAD'):
+            if(self.RobotPosition[0] != 'S'):
+                raise(ValueError('Invalid op - cannot load while not on a stack node'));
+                            
+            if(self.RobotCask):
+                raise(ValueError('Invalid op - cannot load while carrying a cask'));
+                
+            self.RobotCask = self.removeFromStack(self.RobotPosition);    
+            
+        elif(op.OpType == 'UNLOAD'):
+            if(self.RobotPosition[0] != 'S'):
+                raise(ValueError('Invalid op - cannot unload while not on a stack node'));
+            
+            if(not self.RobotCask):
+                raise(ValueError('Invalid op - cannot unload while not carrying any cask'));
+                
+            self.insertToStack(self.RobotPosition, self.RobotCask);
+            self.RobotCask = '';
+            
         else:
-            raise(ValueError('Operação inválida - OpType inválido'));
+            raise(ValueError('Invalid op - invalid OpType'));
             
     def possibleOps(self):
         EdgeList = self.World[self.RobotPosition];
@@ -91,7 +122,21 @@ class state:
         for i in range(0,N):
             ret.append(operation('MOVE', i));
         
+        if(self.RobotPosition[0] == 'S'):
+            if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= CasksProps[self.RobotCask].Length):
+                ret.append(operation('UNLOAD'));
+            elif(self.Stacks[self.RobotPosition].Casks and not self.RobotCask):
+                ret.append(operation('LOAD'));
+        
         return ret;
-            
-
+        
+    def expandState(self):
+        AllOps = self.possibleOps();
+        ChildStates = [];
+         
+        for i in range(0,len(AllOps)):
+            newState = self.copy();
+            newState.applyOp(AllOps[i]);
+            ChildStates.append(newState);
+        return ChildStates;
 

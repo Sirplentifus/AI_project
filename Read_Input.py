@@ -16,7 +16,7 @@ while(1):
     if(a.isspace()):
         continue;
     elif(a[0] == 'C'):
-        CaskDict[params[0]] = cask(int(params[1]), float(params[2]));
+        CasksProps[params[0]] = cask(int(params[1]), float(params[2]));
     elif(a[0] == 'S'):
         S = stack(int(params[1]));
         initialState.Stacks[params[0]] = S;
@@ -47,22 +47,33 @@ EstadoNovo = initialState.copy();
 EstadoNovo.applyOp(operation('MOVE', 0));
 
 possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
-OpDest = [i for i in range(1,len(possible_edges)) if possible_edges[i].IDto == 'B']
+OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'B']
 EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
 
+possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
+OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'A']
+EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
 
+possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
+OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'S1']
+EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
 
-print('CaskDict:\n');
-pprint.pprint(CaskDict);
+EstadoNovo.applyOp(operation('LOAD'));
 
-print('initialState:\n');
+print('CasksProps:\n');
+pprint.pprint(CasksProps);
+
+print('\ninitialState:');
 pprint.pprint(initialState);
 
-print('EstadoNovo:\n');
+print('\nEstadoNovo:');
 pprint.pprint(EstadoNovo);
 
-print('Possible Ops:\n');
+print('\nPossible child states:');
+pprint.pprint(EstadoNovo.expandState());
+
+print('\nPossible Ops:');
 pprint.pprint(EstadoNovo.possibleOps());
 
-print('World:\n');
+print('\nWorld:');
 pprint.pprint(initialState.World);
