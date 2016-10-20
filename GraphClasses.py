@@ -1,8 +1,6 @@
-#No object has its own ID because I say so
-
 import copy
 
-class cask:
+class cask: #describes a cask
     
     def __init__(self, newLength=0, newWeight=0):
         self.Length = newLength;
@@ -13,7 +11,7 @@ class cask:
 
 CasksProps = dict(); #dictionary with all the casks, indexed by their ID strings
 
-class stack: #to be used as a C like structure
+class stack: #Describes a stack and the IDs of the casks it contains
     
     def __init__(self, newMaxLength):
         self.MaxLength = newMaxLength;
@@ -23,11 +21,11 @@ class stack: #to be used as a C like structure
     def __repr__(self):
         return'<MaxLength: %d, LeftOverLength: %d, Casks: %s>\n'%(self.MaxLength, self.LeftOverLength, self.Casks);
         
-class operation:
+class operation: #describes any valid change changing operation
     
     def __init__(self, newOpType='', newDest = -1):
-        self.OpType = newOpType;
-        self.Dest = newDest;
+        self.OpType = newOpType; #Describes the type of operation. Can be 'MOVE', 'LOAD' or 'UNLOAD'
+        self.Dest = newDest; #Index of the edge we are to move along. Only used if OpType is 'MOVE'
         
     def __repr__(self):
         return '<OpType: %s, Dest: %d>'%(self.OpType, self.Dest);
@@ -48,12 +46,25 @@ class state:
     RobotPosition = 'EXIT';
     RobotCask = ''; #Empty string denotes lack of cask
     
+    GoalCask = ''; #Cask that is to be moved to EXIT node
+    OpToThis = operation(); #Operation that went from father state to this state
+    
     GCost = 0;
     
     def __repr__(self):
         return'<RobotPosition:%s,\nRobotCask:%s,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.Stacks);
+    
+    def copy(self):
+        ret = state();
+        ret.RobotPosition = self.RobotPosition
+        ret.RobotCask = self.RobotCask;
+        ret.Stacks = copy.deepcopy(self.Stacks);
+        ret.World = self.World; #Copied by reference
+        ret.GoalCask = self.GoalCask;
+        ret.OpToThis = self.OpToThis;
+        return ret;
         
-    def insertToStack(self, StackID, CaskID):
+    def insertToStack(self, StackID, CaskID): #Insert a cask to a stack. Raises exception if it doesn't fit
         C = CasksProps[CaskID];
         S = self.Stacks[StackID];
         
@@ -64,7 +75,7 @@ class state:
         S.LeftOverLength = S.LeftOverLength - C.Length;
         S.Casks.append(CaskID);
     
-    def removeFromStack(self, StackID):
+    def removeFromStack(self, StackID): #removes a cask from a stack, and returns its ID string. Raises exception if it's empty
         S = self.Stacks[StackID];
         
         if(not S.Casks):
@@ -76,16 +87,8 @@ class state:
         S.LeftOverLength = S.LeftOverLength + C.Length;
         
         return CaskID;
-    
-    def copy(self):
-        ret = state();
-        ret.RobotPosition = self.RobotPosition
-        ret.RobotCask = self.RobotCask;
-        ret.Stacks = copy.deepcopy(self.Stacks);
-        ret.World = self.World; #Copied by reference
-        return ret;
         
-    def applyOp(self, op):
+    def applyOp(self, op): #Applies an operation to a state. Raises exception if it's not a valid operation.
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
             if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
@@ -115,7 +118,7 @@ class state:
         else:
             raise(ValueError('Invalid op - invalid OpType'));
             
-    def possibleOps(self):
+    def possibleOps(self): #Returns a list of all the possible operations in this state
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
         ret = [];
@@ -130,7 +133,7 @@ class state:
         
         return ret;
         
-    def expandState(self):
+    def expandState(self): #Creates a list of all the possible children states for this state
         AllOps = self.possibleOps();
         ChildStates = [];
          
@@ -139,4 +142,13 @@ class state:
             newState.applyOp(AllOps[i]);
             ChildStates.append(newState);
         return ChildStates;
+    
+    def goalAchieved(self): #Returns true if the goal (moving GoalCask to 'EXIT' node) has been achieved and false otherwise
+        return (self.RobotPosition=='EXIT' and self.RobotCask==self.GoalCask);
 
+#The following function is just a convenience for testing, and should not be used by the problem solving algortihm
+#It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
+def MoveTo(AffectedState, Destination):
+    possible_edges = AffectedState.World[AffectedState.RobotPosition];
+    OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == Destination]
+    AffectedState.applyOp(operation('MOVE', OpDest[0]));

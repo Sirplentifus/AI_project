@@ -4,8 +4,9 @@ from GraphClasses import *
     
 initialState = state();
 
-fh = open('../input.txt','r');#sys.stdin;
+initialState.GoalCask = sys.argv[1];
 
+fh = open('../input.txt','r');#sys.stdin;
 
 while(1):
     a=fh.readline();
@@ -42,23 +43,17 @@ while(1):
     else:
         raise(ValueError('Invalid input'));
 
+if(CasksProps.get(initialState.GoalCask) == None):
+    raise(ValueError('The cask to be retireved isn\'t present in the world'));
+
+#Everything below are tests
+
 EstadoNovo = initialState.copy();
-
 EstadoNovo.applyOp(operation('MOVE', 0));
-
-possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
-OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'B']
-EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
-
-possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
-OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'A']
-EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
-
-possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
-OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == 'S1']
-EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
-
-EstadoNovo.applyOp(operation('LOAD'));
+MoveTo(EstadoNovo, 'B');
+MoveTo(EstadoNovo, 'A');
+MoveTo(EstadoNovo, 'S1');
+#EstadoNovo.applyOp(operation('LOAD'));
 
 print('CasksProps:\n');
 pprint.pprint(CasksProps);
@@ -77,3 +72,6 @@ pprint.pprint(EstadoNovo.possibleOps());
 
 print('\nWorld:');
 pprint.pprint(initialState.World);
+
+print('\nGoal Cask:');
+print(EstadoNovo.GoalCask);
