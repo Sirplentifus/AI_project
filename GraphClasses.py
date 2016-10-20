@@ -9,8 +9,6 @@ class cask: #describes a cask
     def __repr__(self):
         return '<Length: %d, Weight: %.1f>'%(self.Length, self.Weight);
 
-CasksProps = dict(); #dictionary with all the casks, indexed by their ID strings
-
 class stack: #Describes a stack and the IDs of the casks it contains
     
     def __init__(self, newMaxLength):
@@ -40,6 +38,7 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
 
 
 class state:
+    CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
     World = dict(); #Has all the nodes (including stacks) that exist in the form of edgeTo lists
     
@@ -65,7 +64,7 @@ class state:
         return ret;
         
     def insertToStack(self, StackID, CaskID): #Insert a cask to a stack. Raises exception if it doesn't fit
-        C = CasksProps[CaskID];
+        C = self.CasksProps[CaskID];
         S = self.Stacks[StackID];
         
         if(S.LeftOverLength < C.Length):
@@ -82,7 +81,7 @@ class state:
             raise(ValueError('Stack is empty'));
         
         CaskID = S.Casks.pop();
-        C = CasksProps[CaskID];
+        C = self.CasksProps[CaskID];
         
         S.LeftOverLength = S.LeftOverLength + C.Length;
         
@@ -126,7 +125,7 @@ class state:
             ret.append(operation('MOVE', i));
         
         if(self.RobotPosition[0] == 'S'):
-            if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= CasksProps[self.RobotCask].Length):
+            if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= self.CasksProps[self.RobotCask].Length):
                 ret.append(operation('UNLOAD'));
             elif(self.Stacks[self.RobotPosition].Casks and not self.RobotCask):
                 ret.append(operation('LOAD'));

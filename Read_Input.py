@@ -17,7 +17,7 @@ while(1):
     if(a.isspace()):
         continue;
     elif(a[0] == 'C'):
-        CasksProps[params[0]] = cask(int(params[1]), float(params[2]));
+        initialState.CasksProps[params[0]] = cask(int(params[1]), float(params[2]));
     elif(a[0] == 'S'):
         S = stack(int(params[1]));
         initialState.Stacks[params[0]] = S;
@@ -43,7 +43,7 @@ while(1):
     else:
         raise(ValueError('Invalid input'));
 
-if(CasksProps.get(initialState.GoalCask) == None):
+if(initialState.CasksProps.get(initialState.GoalCask) == None):
     raise(ValueError('The cask to be retireved isn\'t present in the world'));
 
 #Everything below are tests
@@ -53,10 +53,14 @@ EstadoNovo.applyOp(operation('MOVE', 0));
 MoveTo(EstadoNovo, 'B');
 MoveTo(EstadoNovo, 'A');
 MoveTo(EstadoNovo, 'S1');
-#EstadoNovo.applyOp(operation('LOAD'));
+EstadoNovo.applyOp(operation('LOAD'));
+MoveTo(EstadoNovo, 'A');
+MoveTo(EstadoNovo, 'B');
+MoveTo(EstadoNovo, 'C');
+MoveTo(EstadoNovo, 'EXIT');
 
 print('CasksProps:\n');
-pprint.pprint(CasksProps);
+pprint.pprint(initialState.CasksProps);
 
 print('\ninitialState:');
 pprint.pprint(initialState);
@@ -75,3 +79,6 @@ pprint.pprint(initialState.World);
 
 print('\nGoal Cask:');
 print(EstadoNovo.GoalCask);
+
+print('\nGoal achieved?');
+print(EstadoNovo.goalAchieved());
