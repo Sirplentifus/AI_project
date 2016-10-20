@@ -1,10 +1,11 @@
 import sys;
-        
+import pprint;
 from GraphClasses import *
     
 initialState = state();
+initialState.RobotPosition = 'A';
 
-fh = open('input.txt','r');#sys.stdin;
+fh = open('../input.txt','r');#sys.stdin;
 
 
 while(1):
@@ -26,12 +27,29 @@ while(1):
         
         
     elif(a[0] == 'E'):
-        print('Its an edge');
+        NodeLeftID = params[1];
+        NodeRightID = params[2];
+        Cost = float(params[3]);
+        
+        EdgeToRight = edgeTo(NodeRightID, Cost);
+        EdgeToLeft = edgeTo(NodeLeftID, Cost);
+        
+        NodeLeft = initialState.World.setdefault(NodeLeftID, []);
+        NodeLeft.append(EdgeToRight);
+        
+        NodeRight = initialState.World.setdefault(NodeRightID, []);
+        NodeRight.append(EdgeToLeft);
+        
     else:
         print('Its not valid\n');
-        
-print(CaskDict);
-
-print(initialState);
 
 
+print('CaskDict:\n');
+pprint.pprint(CaskDict);
+
+print('initialState:\n');
+pprint.pprint(initialState);
+
+
+print('World:\n');
+pprint.pprint(initialState.World);
