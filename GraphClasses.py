@@ -9,7 +9,7 @@ class cask:
         self.Weight = newWeight;
         
     def __repr__(self):
-        return '<Length: %d, Weight: %d>'%(self.Length, self.Weight);
+        return '<Length: %d, Weight: %.1f>'%(self.Length, self.Weight);
 
 CaskDict = dict(); #dictionary with all the casks, indexed by their ID strings
 
@@ -28,6 +28,9 @@ class operation:
     def __init__(self, newOpType='', newDest = -1):
         self.OpType = newOpType;
         self.Dest = newDest;
+        
+    def __repr__(self):
+        return '<OpType: %s, Dest: %d>'%(self.OpType, self.Dest);
 
 class edgeTo: #represents a connection. Only makes sense when a member of a map node
     def __init__(self, newIDto='', newCost=0):
@@ -69,17 +72,26 @@ class state:
         ret.World = self.World; #Copied by reference
         return ret;
         
-    def applyOp(op):
+    def applyOp(self, op):
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
-            if(moveInd<0 or moveInd>=len(self.World[RobotPosition])):
+            if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
                 raise(ValueError('Operação inválida - op.Dest inválido'));
             
-            DestinationEdge = (World[RobotPosition])[op.Dest];
+            DestinationEdge = (self.World[self.RobotPosition])[op.Dest];
             self.RobotPosition = DestinationEdge.IDto;
+        #elif(op.OpType == 'LOAD'):
         else:
             raise(ValueError('Operação inválida - OpType inválido'));
             
+    def possibleOps(self):
+        EdgeList = self.World[self.RobotPosition];
+        N = len(EdgeList);
+        ret = [];
+        for i in range(0,N):
+            ret.append(operation('MOVE', i));
+        
+        return ret;
             
 
 

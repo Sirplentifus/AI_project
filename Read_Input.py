@@ -3,7 +3,6 @@ import pprint;
 from GraphClasses import *
     
 initialState = state();
-initialState.RobotPosition = 'A';
 
 fh = open('../input.txt','r');#sys.stdin;
 
@@ -17,7 +16,7 @@ while(1):
     if(a.isspace()):
         continue;
     elif(a[0] == 'C'):
-        CaskDict[params[0]] = cask(int(params[1]), int(params[1]));
+        CaskDict[params[0]] = cask(int(params[1]), float(params[2]));
     elif(a[0] == 'S'):
         S = stack(int(params[1]));
         initialState.Stacks[params[0]] = S;
@@ -41,7 +40,16 @@ while(1):
         NodeRight.append(EdgeToLeft);
         
     else:
-        print('Its not valid\n');
+        raise(ValueError('Invalid input'));
+
+EstadoNovo = initialState.copy();
+
+EstadoNovo.applyOp(operation('MOVE', 0));
+
+possible_edges = EstadoNovo.World[EstadoNovo.RobotPosition];
+OpDest = [i for i in range(1,len(possible_edges)) if possible_edges[i].IDto == 'B']
+EstadoNovo.applyOp(operation('MOVE', OpDest[0]));
+
 
 
 print('CaskDict:\n');
@@ -50,6 +58,11 @@ pprint.pprint(CaskDict);
 print('initialState:\n');
 pprint.pprint(initialState);
 
+print('EstadoNovo:\n');
+pprint.pprint(EstadoNovo);
+
+print('Possible Ops:\n');
+pprint.pprint(EstadoNovo.possibleOps());
 
 print('World:\n');
 pprint.pprint(initialState.World);
