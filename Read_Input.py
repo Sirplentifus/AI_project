@@ -59,8 +59,8 @@ MoveTo(EstadoNovo, 'B');
 MoveTo(EstadoNovo, 'C');
 MoveTo(EstadoNovo, 'EXIT');
 
-print('CasksProps:\n');
-pprint.pprint(initialState.CasksProps);
+print('CasksProps:');
+pprint.pprint(EstadoNovo.CasksProps);
 
 print('\ninitialState:');
 pprint.pprint(initialState);

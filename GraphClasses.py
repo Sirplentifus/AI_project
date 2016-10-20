@@ -19,7 +19,7 @@ class stack: #Describes a stack and the IDs of the casks it contains
     def __repr__(self):
         return'<MaxLength: %d, LeftOverLength: %d, Casks: %s>\n'%(self.MaxLength, self.LeftOverLength, self.Casks);
         
-class operation: #describes any valid change changing operation
+class operation: #describes any valid state changing operation
     
     def __init__(self, newOpType='', newDest = -1):
         self.OpType = newOpType; #Describes the type of operation. Can be 'MOVE', 'LOAD' or 'UNLOAD'
@@ -51,13 +51,14 @@ class state:
     GCost = 0;
     
     def __repr__(self):
-        return'<RobotPosition:%s,\nRobotCask:%s,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.Stacks);
+        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis:%s,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis, self.Stacks);
     
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
         ret.RobotCask = self.RobotCask;
         ret.Stacks = copy.deepcopy(self.Stacks);
+        ret.CasksProps = self.CasksProps; #copied by reference
         ret.World = self.World; #Copied by reference
         ret.GoalCask = self.GoalCask;
         ret.OpToThis = self.OpToThis;
@@ -116,7 +117,10 @@ class state:
             
         else:
             raise(ValueError('Invalid op - invalid OpType'));
+        
+        self.OpToThis = op;
             
+                        
     def possibleOps(self): #Returns a list of all the possible operations in this state
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
