@@ -57,6 +57,51 @@ class state:
     
     GCost = 0;
     
+    #initializes from file if a file_handle is specified
+    def __init__(self, fileHandle=None, GoalCask=''):
+        if(fileHandle==None or GoalCask==''):
+            return;
+            
+        while(1):
+            line_str=fileHandle.readline();
+            params = line_str.split();
+            if(len(line_str) == 0):
+                print('Finished reading\n');
+                break;
+            if(line_str.isspace()):
+                continue;
+            elif(line_str[0] == 'C'):
+                self.CasksProps[params[0]] = cask(int(params[1]), float(params[2]));
+            elif(line_str[0] == 'S'):
+                S = stack(int(params[1]));
+                self.Stacks[params[0]] = S;
+                
+                for i in range(2, len(params)):
+                    self.insertToStack(params[0], params[i]);
+                
+                
+            elif(line_str[0] == 'E'):
+                NodeLeftID = params[1];
+                NodeRightID = params[2];
+                Cost = float(params[3]);
+                
+                EdgeToRight = edgeTo(NodeRightID, Cost);
+                EdgeToLeft = edgeTo(NodeLeftID, Cost);
+                
+                NodeLeft = self.World.setdefault(NodeLeftID, []);
+                NodeLeft.append(EdgeToRight);
+                
+                NodeRight = self.World.setdefault(NodeRightID, []);
+                NodeRight.append(EdgeToLeft);
+                
+            else:
+                continue; #project description says that "All other lines should be ignored"
+        
+        self.GoalCask = GoalCask;
+        
+        if(self.CasksProps.get(self.GoalCask) == None):
+            raise(ValueError('The cask to be retireved isn\'t present in the world'));
+    
     def __repr__(self):
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
     
@@ -172,7 +217,7 @@ class state:
         return (self.RobotPosition=='EXIT' and self.RobotCask==self.GoalCask);
         
     #Checks if two states are the same. Note that a state's parent, Gcost, OpToThis and other things are irrelevant.
-    #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same place
+    #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same position
     def __eq__(self, other):
         return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
 
