@@ -6,33 +6,25 @@ from Domain_Dependent import *;
 def General_Search(start_node):
     frontier = [start_node];
     explored = [];
-    newNode = start_node.copy();
     
-    #~ while(1):
-        #~ assert frontier;
-        #~ node = frontier.pop();
-        #~ if(
-        
-    newNode = MoveTo(start_node, 'C');
-    newNode = MoveTo(newNode, 'D');
-    newNode = MoveTo(newNode, 'A');
-    newNode = MoveTo(newNode, 'S1');
-    newNode = MoveTo(newNode, 'LOAD');
-    newNode = MoveTo(newNode, 'A');
-    newNode = MoveTo(newNode, 'S11');
-    newNode = MoveTo(newNode, 'UNLOAD');
-    newNode = MoveTo(newNode, 'A');
-    newNode = MoveTo(newNode, 'S1');
-    newNode = MoveTo(newNode, 'LOAD');
-    newNode = MoveTo(newNode, 'A');
-    newNode = MoveTo(newNode, 'D');
-    newNode = MoveTo(newNode, 'C');
-    newNode = MoveTo(newNode, 'EXIT');
-    
-    return newNode;
-
-        
-
+    while(1):
+        assert frontier;
+        frontier = sorted(frontier, key = lambda node: node.GCost, reverse = True);
+        node = frontier.pop();
+        if(node.goalAchieved()):
+            return node;
+        nodeChildren = node.expandState();
+        for nodeChild in nodeChildren:
+            matches = [x for x in frontier if x==nodeChild];
+            if(matches):
+                matches.append(nodeChild);
+                lowestCostNode = min(matches, key = lambda node: node.GCost);
+                matches.remove(lowestCostNode);
+                for x in matches:
+                    frontier.remove(x);
+                frontier.append(lowestCostNode);
+            else:
+                frontier.append(nodeChild);
 
 
 fh = open(sys.argv[1],'r');#sys.stdin;
