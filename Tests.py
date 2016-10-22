@@ -2,46 +2,46 @@ import sys;
 import pprint;
 from Domain_Dependent import *
     
-fh = open('../input.txt','r');#sys.stdin;
-initialState = state(fh, sys.argv[1]);
+fh = open(sys.argv[1],'r');#sys.stdin;
+initialState = state(fh, sys.argv[2]);
 
-EstadoNovo = initialState.copy();
-EstadoNovo.applyOp(operation('MOVE', 0));
-MoveTo(EstadoNovo, 'B');
-MoveTo(EstadoNovo, 'A');
-MoveTo(EstadoNovo, 'S1');
-EstadoNovo.applyOp(operation('LOAD'));
-MoveTo(EstadoNovo, 'A');
-MoveTo(EstadoNovo, 'B');
-MoveTo(EstadoNovo, 'C');
-MoveTo(EstadoNovo, 'EXIT');
+newState = initialState.copy();
+newState.applyOp(operation('MOVE', 0));
+MoveTo(newState, 'B');
+MoveTo(newState, 'A');
+MoveTo(newState, 'S1');
+newState.applyOp(operation('LOAD'));
+MoveTo(newState, 'A');
+MoveTo(newState, 'B');
+MoveTo(newState, 'C');
+MoveTo(newState, 'EXIT');
 
 print('CasksProps:');
-pprint.pprint(EstadoNovo.CasksProps);
+pprint.pprint(newState.CasksProps);
 
 print('\ninitialState:');
 pprint.pprint(initialState);
 
-print('\nEstadoNovo:');
-pprint.pprint(EstadoNovo);
+print('\nnewState:');
+pprint.pprint(newState);
 
-print('\nEstadoNovo\'s parent:');
-pprint.pprint(EstadoNovo.parent);
+print('\nnewState\'s parent:');
+pprint.pprint(newState.parent);
 
 print('\nPossible child states:');
-pprint.pprint(EstadoNovo.expandState());
+pprint.pprint(newState.expandState());
 
 print('\nPossible Ops:');
-pprint.pprint(EstadoNovo.possibleOps());
+pprint.pprint(newState.possibleOps());
 
 print('\nWorld:');
 pprint.pprint(initialState.World);
 
 print('\nGoal Cask:');
-print(EstadoNovo.GoalCask);
+print(newState.GoalCask);
 
 print('\nGoal achieved?');
-print(EstadoNovo.goalAchieved());
+print(newState.goalAchieved());
 
-print('\nEstadoNovo same as initialState?:');
-print(EstadoNovo == initialState);
+print('\nnewState same as initialState?:');
+print(newState == initialState);

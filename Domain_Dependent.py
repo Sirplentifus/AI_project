@@ -66,7 +66,6 @@ class state:
             line_str=fileHandle.readline();
             params = line_str.split();
             if(len(line_str) == 0):
-                print('Finished reading\n');
                 break;
             if(line_str.isspace()):
                 continue;
@@ -104,6 +103,16 @@ class state:
     
     def __repr__(self):
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
+    
+    def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
+        this_node = self;
+        ret = '%g\n'%this_node.GCost;
+        
+        while(this_node.OpToThis_str):
+            ret = this_node.OpToThis_str + '\n' + ret;
+            this_node = this_node.parent;
+            
+        return ret;
     
     def copy(self):
         ret = state();
@@ -223,7 +232,16 @@ class state:
 
 #The following function is just a convenience for testing, and should not be used by the problem solving algortihm
 #It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
-def MoveTo(AffectedState, Destination):
-    possible_edges = AffectedState.World[AffectedState.RobotPosition];
-    OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == Destination]
-    AffectedState.applyOp(operation('MOVE', OpDest[0]));
+def MoveTo(FirstState, Destination):
+    AffectedState = FirstState.copy();
+    
+    if(Destination == 'LOAD'):
+        AffectedState.applyOp(operation('LOAD'));
+    elif(Destination == 'UNLOAD'):
+        AffectedState.applyOp(operation('UNLOAD'));
+    else:
+        possible_edges = AffectedState.World[AffectedState.RobotPosition];
+        OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == Destination]
+        AffectedState.applyOp(operation('MOVE', OpDest[0]));
+        
+    return AffectedState;
