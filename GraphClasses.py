@@ -19,6 +19,10 @@ class stack: #Describes a stack and the IDs of the casks it contains
     def __repr__(self):
         return'<MaxLength: %d, LeftOverLength: %d, Casks: %s>\n'%(self.MaxLength, self.LeftOverLength, self.Casks);
         
+    #Checks if the 2 stacks contain the same casks
+    def __eq__(self, other):
+        return self.Casks == other.Casks;
+        
 class operation: #describes any valid state changing operation
     
     def __init__(self, newOpType='', newDest = -1):
@@ -166,6 +170,11 @@ class state:
     
     def goalAchieved(self): #Returns true if the goal (moving GoalCask to 'EXIT' node) has been achieved and false otherwise
         return (self.RobotPosition=='EXIT' and self.RobotCask==self.GoalCask);
+        
+    #Checks if two states are the same. Note that a state's parent, Gcost, OpToThis and other things are irrelevant.
+    #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same place
+    def __eq__(self, other):
+        return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
 
 #The following function is just a convenience for testing, and should not be used by the problem solving algortihm
 #It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
