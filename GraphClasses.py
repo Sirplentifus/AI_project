@@ -7,7 +7,7 @@ class cask: #describes a cask
         self.Weight = newWeight;
         
     def __repr__(self):
-        return '<Length: %d, Weight: %.1f>'%(self.Length, self.Weight);
+        return '<Length: %d, Weight: %g>'%(self.Length, self.Weight);
 
 class stack: #Describes a stack and the IDs of the casks it contains
     
@@ -29,12 +29,12 @@ class operation: #describes any valid state changing operation
         return '<OpType: %s, Dest: %d>'%(self.OpType, self.Dest);
 
 class edgeTo: #represents a connection. Only makes sense when a member of a map node
-    def __init__(self, newIDto='', newCost=0):
+    def __init__(self, newIDto='', newLength=0):
         self.IDto = newIDto;
-        self.Cost = newCost;
+        self.Length = newLength;
         
     def __repr__(self):
-        return '<IDto: %s, Cost: %.1f>'%(self.IDto, self.Cost);
+        return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
 
 class state:
@@ -46,22 +46,27 @@ class state:
     RobotCask = ''; #Empty string denotes lack of cask
     
     GoalCask = ''; #Cask that is to be moved to EXIT node
-    OpToThis = operation(); #Operation that went from father state to this state
+    OpToThis = operation(); #Operation that went from father state to this state - POSSIBLY USELESS
+    OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
+    
+    parent = None; #the parent to this node. Made in copy function. Not represented due to recursivity.
     
     GCost = 0;
     
     def __repr__(self):
-        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis:%s,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis, self.Stacks);
+        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
     
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
         ret.RobotCask = self.RobotCask;
-        ret.Stacks = copy.deepcopy(self.Stacks);
+        ret.Stacks = copy.deepcopy(self.Stacks); #stacks vary from state to state, so they're deeply copied
         ret.CasksProps = self.CasksProps; #copied by reference
         ret.World = self.World; #Copied by reference
         ret.GoalCask = self.GoalCask;
         ret.OpToThis = self.OpToThis;
+        ret.parent = self; #Setting the reference to the new state's parent
+        ret.GCost = self.GCost;
         return ret;
         
     def insertToStack(self, StackID, CaskID): #Insert a cask to a stack. Raises exception if it doesn't fit
@@ -94,8 +99,17 @@ class state:
             if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
                 raise(ValueError('Invalid op - invalid op.Dest'));
             
+            self.OpToThis_str = 'move %s '%(self.RobotPosition)
             DestinationEdge = (self.World[self.RobotPosition])[op.Dest];
             self.RobotPosition = DestinationEdge.IDto;
+            
+            if(self.RobotCask):
+                OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
+            else:
+                OpCost = 1;    
+            OpCost = OpCost*DestinationEdge.Length;
+            
+            self.OpToThis_str = self.OpToThis_str + '%s %g'%(self.RobotPosition, OpCost);
         elif(op.OpType == 'LOAD'):
             if(self.RobotPosition[0] != 'S'):
                 raise(ValueError('Invalid op - cannot load while not on a stack node'));
@@ -103,7 +117,9 @@ class state:
             if(self.RobotCask):
                 raise(ValueError('Invalid op - cannot load while carrying a cask'));
                 
-            self.RobotCask = self.removeFromStack(self.RobotPosition);    
+            self.RobotCask = self.removeFromStack(self.RobotPosition);
+            OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
+            self.OpToThis_str = 'load %s %s %g'%(self.RobotCask, self.RobotPosition, OpCost);
             
         elif(op.OpType == 'UNLOAD'):
             if(self.RobotPosition[0] != 'S'):
@@ -111,7 +127,9 @@ class state:
             
             if(not self.RobotCask):
                 raise(ValueError('Invalid op - cannot unload while not carrying any cask'));
-                
+            
+            OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
+            self.OpToThis_str = 'unload %s %s %g'%(self.RobotCask, self.RobotPosition, OpCost);    
             self.insertToStack(self.RobotPosition, self.RobotCask);
             self.RobotCask = '';
             
@@ -119,7 +137,7 @@ class state:
             raise(ValueError('Invalid op - invalid OpType'));
         
         self.OpToThis = op;
-            
+        self.GCost = self.GCost+OpCost;
                         
     def possibleOps(self): #Returns a list of all the possible operations in this state
         EdgeList = self.World[self.RobotPosition];
