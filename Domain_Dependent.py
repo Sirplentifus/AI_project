@@ -40,7 +40,6 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
     def __repr__(self):
         return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
-
 class state:
     CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
@@ -74,9 +73,11 @@ class state:
             elif(line_str[0] == 'S'):
                 S = stack(int(params[1]));
                 self.Stacks[params[0]] = S;
+                self.World.setdefault(params[0], []);
                 
                 for i in range(2, len(params)):
-                    self.insertToStack(params[0], params[i]);
+                    S.Casks.append(params[i]); #LeftOverLength's for all stacks have to be updated later
+                    #self.insertToStack(params[0], params[i]); #Can't use this - makes errors if casks appear after stacks in which they are
                 
                 
             elif(line_str[0] == 'E'):
@@ -98,8 +99,43 @@ class state:
         
         self.GoalCask = GoalCask;
         
+        #In the following lines of code, certain conditions are checked for.
+        #Situations that make the problem unsolvable raise exceptions, while situations that are just strange raise warnings.
+        #A problem can still be unsolvable and raise no exceptions nor warnings. Exemples are:
+        #   The cask to be retrieved in in a sub-graph that does not connect to the EXIT node
+        #   The casks above the cask to be retrieved cannot fit in any way in the remaining stacks
+        
+        #Checking if the cask to retrieve is in one of the stacks
+        CaskInWorld = False;
+        for Sid in self.Stacks:
+            S = self.Stacks[Sid];
+            if( [x for x in S.Casks if x == self.GoalCask] ):
+                CaskInWorld = True;
+                break;
+        if(not CaskInWorld):
+            raise(ValueError('The cask to be retrieved isn\'t in any of the stacks'));
+        
+        #Checking if the cask to retrieve has its propreties defined
         if(self.CasksProps.get(self.GoalCask) == None):
-            raise(ValueError('The cask to be retireved isn\'t present in the world'));
+            raise(ValueError('The cask to be retrieved isn\'t wasn\'t defined'));
+        
+        #Checking if the stacks are connected to some other node. If an unconnected node is found, a warning is printed, unless it contains the goalCask, in which case an exception is raised.
+        for Sid in self.Stacks:
+            if( not self.World.get(Sid) ):
+                if( self.Stacks[Sid].Casks.count(self.GoalCask) == 1 ):
+                    raise(ValueError('The cask to be retrieved is in an unconnected stack'));
+                else:
+                    print('Warning - At least one of the stacks is not connected to any node');
+                break;
+            
+        #Computing LeftOverLength for all the stacks
+        for Sid in self.Stacks:
+            S = self.Stacks[Sid];
+            for Cid in S.Casks:
+                S.LeftOverLength = S.LeftOverLength - self.CasksProps[Cid].Length;
+            if(S.LeftOverLength < 0):
+                raise(ValueError('At least one of the stacks was initialized with casks that don\'t fit in it'));
+            
     
     def __repr__(self):
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
