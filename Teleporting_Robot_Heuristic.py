@@ -8,10 +8,13 @@ class TeleportingRobotHeuristic:
     StackWithGoalCask = '';
     
     #All we need to do is figure out where the Goal Cask is
+    
     def HeuristicPrep(self, State):
+        
         for Sid in State.Stacks:
             if( State.Stacks[Sid].Casks.count(State.GoalCask) == 1 ):
                 self.StackWithGoalCask = Sid;
+                return;
         
     #Cost of all the loadings and unloading that have to be done
     def HCost(self, State):

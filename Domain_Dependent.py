@@ -175,6 +175,7 @@ class state:
         ret.OpToThis = self.OpToThis;
         ret.parent = self; #Setting the reference to the new state's parent
         ret.GCost = self.GCost;
+        ret.HeuristicObj = self.HeuristicObj
         return ret;
         
     def insertToStack(self, StackID, CaskID): #Insert a cask to a stack. Raises exception if it doesn't fit

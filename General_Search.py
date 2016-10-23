@@ -1,4 +1,5 @@
 from Domain_Dependent import *;
+import pdb; #To use for debugging
 
 #Solves the problem using an uninformed uniform cost search - always expanding the lowest cost node
 def General_Search(start_node):
@@ -25,9 +26,10 @@ def General_Search(start_node):
             if(matches):
                 matches.append(nodeChild);
                 lowestCostNode = min(matches, key = lambda node: node.FFunction());
-                matches.remove(lowestCostNode);
+                
                 for x in matches:
-                    frontier.remove(x);
-                frontier.append(lowestCostNode);
+                    if(x != lowestCostNode):
+                        frontier.remove(x);
+                
             else:
                 frontier.append(nodeChild);
