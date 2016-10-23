@@ -40,6 +40,14 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
     def __repr__(self):
         return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
+
+class DefaultHeuristic:
+    def HeuristicPrep(self, State):
+        pass;
+        
+    def HCost(self, State):
+        return 0;
+
 class state:
     CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
@@ -55,9 +63,10 @@ class state:
     parent = None; #the parent to this node. Made in copy function. Not represented due to recursivity.
     
     GCost = 0;
+    HeuristicObj = DefaultHeuristic(); #Same as having no heuristic
     
     #initializes from file if a file_handle is specified
-    def __init__(self, fileHandle=None, GoalCask=''):
+    def __init__(self, fileHandle=None, GoalCask='', newHeuristicObj = DefaultHeuristic()):
         if(fileHandle==None or GoalCask==''):
             return;
             
@@ -99,6 +108,10 @@ class state:
         
         self.GoalCask = GoalCask;
         
+        #initializing the heuristic
+        self.HeuristicObj = newHeuristicObj;
+        self.HeuristicObj.HeuristicPrep(self);
+        
         #In the following lines of code, certain conditions are checked for.
         #Situations that make the problem unsolvable raise exceptions, while situations that are just strange raise warnings.
         #A problem can still be unsolvable and raise no exceptions nor warnings. Exemples are:
@@ -135,8 +148,9 @@ class state:
                 S.LeftOverLength = S.LeftOverLength - self.CasksProps[Cid].Length;
             if(S.LeftOverLength < 0):
                 raise(ValueError('At least one of the stacks was initialized with casks that don\'t fit in it'));
+                
+        print('Starting node heuristic: %g'%self.HeuristicObj.HCost(self));
             
-    
     def __repr__(self):
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
     
@@ -265,6 +279,9 @@ class state:
     #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same position
     def __eq__(self, other):
         return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
+        
+    def FFunction(self):
+        return self.GCost + self.HeuristicObj.HCost(self);
 
 #The following function is just a convenience for testing, and should not be used by the problem solving algortihm
 #It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
