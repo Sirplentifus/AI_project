@@ -154,6 +154,7 @@ class state:
     def __repr__(self):
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
     
+    #TODO: Declared in abstract class
     def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
         this_node = self;
         ret = '%g\n'%this_node.GCost;
@@ -164,6 +165,7 @@ class state:
             
         return ret;
     
+    #TODO: Declared in abstract class
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
@@ -202,6 +204,7 @@ class state:
         
         return CaskID;
         
+    #TODO: Declared in abstract class
     def applyOp(self, op): #Applies an operation to a state. Raises exception if it's not a valid operation.
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
@@ -248,6 +251,7 @@ class state:
         self.OpToThis = op;
         self.GCost = self.GCost+OpCost;
                         
+    #TODO: Declared in abstract class
     def possibleOps(self): #Returns a list of all the possible operations in this state
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
@@ -263,6 +267,7 @@ class state:
         
         return ret;
         
+    #TODO: Move to abstract class
     def expandState(self): #Creates a list of all the possible children states for this state
         AllOps = self.possibleOps();
         ChildStates = [];
@@ -272,15 +277,17 @@ class state:
             newState.applyOp(AllOps[i]);
             ChildStates.append(newState);
         return ChildStates;
-    
+    #TODO: Declared in abstract class
     def goalAchieved(self): #Returns true if the goal (moving GoalCask to 'EXIT' node) has been achieved and false otherwise
         return (self.RobotPosition=='EXIT' and self.RobotCask==self.GoalCask);
         
+    #TODO: Declared in abstract class
     #Checks if two states are the same. Note that a state's parent, Gcost, OpToThis and other things are irrelevant.
     #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same position
     def __eq__(self, other):
         return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
-        
+    
+    #TODO: Move to abstract class
     def FFunction(self):
         return self.GCost + self.HeuristicObj.HCost(self);
 

@@ -33,6 +33,7 @@ def General_Search(start_node):
                 
                 frontier.append(nodeChild);
                 
+                #Remove all matches except for the lowest-cost one
                 for x in matches:
                     if(x != lowestCostNode):
                         frontier.remove(x);
