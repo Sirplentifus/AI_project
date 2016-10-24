@@ -1,6 +1,19 @@
 
+class DefaultHeuristic:
+    def HeuristicPrep(self, State):
+        pass;
+        
+    def HCost(self, State):
+        return 0;
 
 class genericState:
+    
+    #the parent to this node. Made in copy function. Not represented due to recursion.
+    parent = None;
+    
+    GCost = 0;
+    HeuristicObj = DefaultHeuristic(); #Same as having no heuristic
+    
     #Abstract function to get the current branch of the node tree
     def allOpsToThis(self):
         pass;

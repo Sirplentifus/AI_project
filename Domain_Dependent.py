@@ -41,14 +41,6 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
     def __repr__(self):
         return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
-
-class DefaultHeuristic:
-    def HeuristicPrep(self, State):
-        pass;
-        
-    def HCost(self, State):
-        return 0;
-
 class state(genericState):
     CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
@@ -61,10 +53,10 @@ class state(genericState):
     OpToThis = operation(); #Operation that went from father state to this state - POSSIBLY USELESS
     OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
     
-    parent = None; #the parent to this node. Made in copy function. Not represented due to recursivity.
+     
     
-    GCost = 0;
-    HeuristicObj = DefaultHeuristic(); #Same as having no heuristic
+    
+    
     
     #initializes from file if a file_handle is specified
     def __init__(self, fileHandle=None, GoalCask='', newHeuristicObj = DefaultHeuristic()):
