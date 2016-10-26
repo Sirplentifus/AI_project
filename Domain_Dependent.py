@@ -147,7 +147,7 @@ class state(genericState):
     #Implements abstract function to get the current branch of the node tree
     def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
         this_node = self;
-        ret = '%g\n'%this_node.GCost;
+        ret = '%f\n'%this_node.GCost;
         
         while(this_node.OpToThis_str):
             ret = this_node.OpToThis_str + '\n' + ret;
@@ -211,7 +211,7 @@ class state(genericState):
                 OpCost = 1;    
             OpCost = OpCost*DestinationEdge.Length;
             
-            self.OpToThis_str = self.OpToThis_str + '%s %g'%(self.RobotPosition, OpCost);
+            self.OpToThis_str = self.OpToThis_str + '%s %f'%(self.RobotPosition, OpCost);
         elif(op.OpType == 'LOAD'):
             if(self.RobotPosition[0] != 'S'):
                 raise(ValueError('Invalid op - cannot load while not on a stack node'));
@@ -221,7 +221,7 @@ class state(genericState):
                 
             self.RobotCask = self.removeFromStack(self.RobotPosition);
             OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
-            self.OpToThis_str = 'load %s %s %g'%(self.RobotCask, self.RobotPosition, OpCost);
+            self.OpToThis_str = 'load %s %s %f'%(self.RobotCask, self.RobotPosition, OpCost);
             
         elif(op.OpType == 'UNLOAD'):
             if(self.RobotPosition[0] != 'S'):
@@ -231,7 +231,7 @@ class state(genericState):
                 raise(ValueError('Invalid op - cannot unload while not carrying any cask'));
             
             OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
-            self.OpToThis_str = 'unload %s %s %g'%(self.RobotCask, self.RobotPosition, OpCost);    
+            self.OpToThis_str = 'unload %s %s %f'%(self.RobotCask, self.RobotPosition, OpCost);    
             self.insertToStack(self.RobotPosition, self.RobotCask);
             self.RobotCask = '';
             

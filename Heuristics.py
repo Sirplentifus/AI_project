@@ -53,8 +53,8 @@ class InfiniteStacksHeuristic(TeleportingRobotHeuristic):
     ShortestCostsToStacks = dict();
     ShortestCostsToEXIT = dict();
     
-    #Returns a dictionary with the lowest gost to go from each map node (indexing the dictionary) to MapNode
-    #Performs something similar to a uniform cost search
+    #Returns a dictionary with the lowest cost to go from each map node (indexing the dictionary) to MapNode
+    #Performs something similar to a uniform cost search, but on the map nodes
     def GetLowestCosts(self, State, MapNode):
         ShortestCostsToMapNode = dict();
         
@@ -97,11 +97,24 @@ class InfiniteStacksHeuristic(TeleportingRobotHeuristic):
         for Sid in State.Stacks:
             self.ShortestCostsToStacks[Sid] = self.GetLowestCosts(State, Sid);
             
-        ShortestCostsToEXIT = self.GetLowestCosts(State, 'EXIT');
+        self.ShortestCostsToEXIT = self.GetLowestCosts(State, 'EXIT');
+    
+    def HCost_MovementPart(self, State):
         
+        HCost = 0;
+        #~ pdb.set_trace();
+        
+        if(not State.RobotCask):
+            HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][State.RobotPosition];
+            
+        HCost += self.ShortestCostsToEXIT[State.RobotPosition]*(1+State.CasksProps[State.GoalCask].Weight);
+        
+        return HCost;
+            
+    
     def HCost(self, State):
         HCost = self.HCost_CaskPart(State);
-        
+        HCost += self.HCost_MovementPart(State);
         return HCost;
         
     

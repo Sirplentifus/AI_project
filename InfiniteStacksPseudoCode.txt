@@ -11,10 +11,10 @@ Infinite Stacks Heuristic:
     
     HCost:
         If robot is carrying nothing:
-            HCost = cost to go to where the stack with the goal cask is + 
+            HCost = cost to go to the stack which has the goal cask [DONE]
                   + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
                   + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
-                  + cost to move to exit (with the goal cask)
+                  + cost to move to exit (with the goal cask) [DONE]
         
         If robot is carrying a cask which is not the goal cask:
             HCost = cost to unload the cask being carried [DONE IN PREVIOUS HEURISTIC]
@@ -22,9 +22,9 @@ Infinite Stacks Heuristic:
                   + cost to go to the stack with the goal cask from said stack
                   + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
                   + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
-                  + cost to move to exit (with the goal cask)
+                  + cost to move to exit (with the goal cask) [DONE]
         
         If robot is carrying the goal cask:
-            HCost = cost to move to exit (with the goal cask);
+            HCost = cost to move to exit (with the goal cask); [DONE]
 
 BAN UNLOADING WHEN CARRYING THE GOAL CASK - Done
