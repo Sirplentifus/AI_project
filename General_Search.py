@@ -10,6 +10,7 @@ def General_Search(start_node):
         assert frontier;
         frontier = sorted(frontier, key = lambda node: node.FFunction(), reverse = True);
         node = frontier.pop();
+        #~ pdb.set_trace();
         if(node.goalAchieved()):
             return node;
         explored.append(node);

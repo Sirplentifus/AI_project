@@ -149,10 +149,11 @@ class state:
             if(S.LeftOverLength < 0):
                 raise(ValueError('At least one of the stacks was initialized with casks that don\'t fit in it'));
                 
-        print('Starting node heuristic: %g'%self.HeuristicObj.HCost(self));
+        #~ print('Starting node heuristic: %g'%self.HeuristicObj.HCost(self));
             
     def __repr__(self):
-        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g,\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, self.Stacks);
+        HCost = self.HeuristicObj.HCost(self);
+        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g, HCost: %g, FCost: %g\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, HCost, self.FFunction(), self.Stacks);
     
     def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
         this_node = self;
@@ -247,16 +248,20 @@ class state:
         
         self.OpToThis = op;
         self.GCost = self.GCost+OpCost;
-                        
-    def possibleOps(self): #Returns a list of all the possible operations in this state
+    
+    #Returns a list of all the possible operations in this state
+    #If the robot is carrying the goal cask, it is never advantageous to
+    #unload it, so this operation was BANNED
+    def possibleOps(self): 
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
         ret = [];
         for i in range(0,N):
             ret.append(operation('MOVE', i));
         
+        
         if(self.RobotPosition[0] == 'S'):
-            if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= self.CasksProps[self.RobotCask].Length):
+            if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= self.CasksProps[self.RobotCask].Length and self.RobotCask!=self.GoalCask):
                 ret.append(operation('UNLOAD'));
             elif(self.Stacks[self.RobotPosition].Casks and not self.RobotCask):
                 ret.append(operation('LOAD'));
