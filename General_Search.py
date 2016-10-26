@@ -8,16 +8,24 @@ def General_Search(start_node):
     
     while(True):
         assert frontier;
+<<<<<<< HEAD
         node = min(frontier, key = lambda node: node.FFunction());
         frontier.remove(node);
         #~ pdb.set_trace();
+=======
+        #Sort from greatest to lowest f-function
+        frontier = sorted(frontier, key = lambda node: node.FFunction(), reverse = True);
+        #Pop gets the last element, hence the lowest cost
+        node = frontier.pop();
+>>>>>>> cd3cc0fca5e9c296772bb07267a7c7464d20875b
         if(node.goalAchieved()):
             return node;
+        #Add current node to explored nodes list
         explored.append(node);
         nodeChildren = node.expandState();
         for nodeChild in nodeChildren:
             
-            #Checking that the child node was not already explored, and skipping if it was
+            #Check that the child node was not already explored, and skip it if it was
             matches = [x for x in explored if x==nodeChild];
             if(matches):
                 continue;
@@ -26,11 +34,16 @@ def General_Search(start_node):
             matches = [x for x in frontier if x==nodeChild];
             if(matches):
                 matches.append(nodeChild);
+                
                 lowestCostNode = min(matches, key = lambda node: node.FFunction());
                 
+                frontier.append(nodeChild);
+                
+                #Remove all matches except for the lowest-cost one
                 for x in matches:
                     if(x != lowestCostNode):
                         frontier.remove(x);
+
                 
             else:
                 frontier.append(nodeChild);

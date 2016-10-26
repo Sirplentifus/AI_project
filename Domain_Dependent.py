@@ -1,4 +1,5 @@
 import copy
+from Domain_Independent import *;
 
 class cask: #describes a cask
     
@@ -40,15 +41,7 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
     def __repr__(self):
         return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
-
-class DefaultHeuristic:
-    def HeuristicPrep(self, State):
-        pass;
-        
-    def HCost(self, State):
-        return 0;
-
-class state:
+class state(genericState):
     CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
     World = dict(); #Has all the nodes (including stacks) that exist in the form of edgeTo lists
@@ -60,10 +53,10 @@ class state:
     OpToThis = operation(); #Operation that went from father state to this state - POSSIBLY USELESS
     OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
     
-    parent = None; #the parent to this node. Made in copy function. Not represented due to recursivity.
+     
     
-    GCost = 0;
-    HeuristicObj = DefaultHeuristic(); #Same as having no heuristic
+    
+    
     
     #initializes from file if a file_handle is specified
     def __init__(self, fileHandle=None, GoalCask='', newHeuristicObj = DefaultHeuristic()):
@@ -155,6 +148,7 @@ class state:
         HCost = self.HeuristicObj.HCost(self);
         return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g, HCost: %g, FCost: %g\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, HCost, self.FFunction(), self.Stacks);
     
+    #Implements abstract function to get the current branch of the node tree
     def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
         this_node = self;
         ret = '%g\n'%this_node.GCost;
@@ -165,6 +159,7 @@ class state:
             
         return ret;
     
+    #Implements abstract function to copy a node
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
@@ -203,6 +198,7 @@ class state:
         
         return CaskID;
         
+    #Implements abstract function to apply an abstract operation
     def applyOp(self, op): #Applies an operation to a state. Raises exception if it's not a valid operation.
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
@@ -248,11 +244,17 @@ class state:
         
         self.OpToThis = op;
         self.GCost = self.GCost+OpCost;
+<<<<<<< HEAD
     
     #Returns a list of all the possible operations in this state
     #If the robot is carrying the goal cask, it is never advantageous to
     #unload it, so this operation was BANNED
     def possibleOps(self): 
+=======
+                        
+    #Implements abstract function that returns a list of all possible abstract operations
+    def possibleOps(self): #Returns a list of all the possible operations in this state
+>>>>>>> cd3cc0fca5e9c296772bb07267a7c7464d20875b
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
         ret = [];
@@ -267,17 +269,8 @@ class state:
                 ret.append(operation('LOAD'));
         
         return ret;
-        
-    def expandState(self): #Creates a list of all the possible children states for this state
-        AllOps = self.possibleOps();
-        ChildStates = [];
-         
-        for i in range(0,len(AllOps)):
-            newState = self.copy();
-            newState.applyOp(AllOps[i]);
-            ChildStates.append(newState);
-        return ChildStates;
     
+    #Implements abstract function that determines whether the goal has been achieved
     def goalAchieved(self): #Returns true if the goal (moving GoalCask to 'EXIT' node) has been achieved and false otherwise
         return (self.RobotPosition=='EXIT' and self.RobotCask==self.GoalCask);
         
@@ -285,10 +278,9 @@ class state:
     #All that matters for this comparison is if the stacks have the same casks in the same order (this implies the robotCask is the same), and if the robot is in the same position
     def __eq__(self, other):
         return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
-        
-    def FFunction(self):
-        return self.GCost + self.HeuristicObj.HCost(self);
-
+    
+    
+#TODO REMOVE
 #The following function is just a convenience for testing, and should not be used by the problem solving algortihm
 #It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
 def MoveTo(FirstState, Destination):
