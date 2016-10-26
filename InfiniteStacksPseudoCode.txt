@@ -7,24 +7,30 @@ Infinite Stacks Heuristic:
         
         Create a dictionary, like above, indexed by each node, wich has the cost to go from that node to the EXIT.
         
-        Find the stack with the goal cask [DONE IN PREVIOUS HEURISTIC]
+        Find the stack with the goal cask [DONE IN TELPORTING ROBOT]
     
     HCost:
         If robot is carrying nothing:
-            HCost = cost to go to the stack which has the goal cask [DONE]
-                  + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
-                  + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
-                  + cost to move to exit (with the goal cask) [DONE]
+            HCost = cost to go to the stack which has the goal cask [DONE IN GHOST ROBOT]
+                  + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN TELPORTING ROBOT]
+                  
+                  + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask [DONE IN INFINITE STACKS]
+                  
+                  + cost to move to exit (with the goal cask) [DONE IN GHOST ROBOT]
         
         If robot is carrying a cask which is not the goal cask:
-            HCost = cost to unload the cask being carried [DONE IN PREVIOUS HEURISTIC]
-                  + cost to go to the nearest stack without the goal cask
-                  + cost to go to the stack with the goal cask from said stack
-                  + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
-                  + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
-                  + cost to move to exit (with the goal cask) [DONE]
+            HCost = cost to unload the cask being carried [DONE IN TELPORTING ROBOT]
+                
+                  + cost to go to the nearest stack without the goal cask       \
+                  + cost to go to the stack with the goal cask from said stack  |- This part is wrong - it can overestimate the cost. I will not be implemented for now
+                  
+                  + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN TELPORTING ROBOT]
+                  
+                  + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask [DONE IN INFINITE STACKS]
+                  
+                  + cost to move to exit (with the goal cask) [DONE IN GHOST ROBOT]
         
         If robot is carrying the goal cask:
-            HCost = cost to move to exit (with the goal cask); [DONE]
+            HCost = cost to move to exit (with the goal cask); [DONE IN GHOST ROBOT]
 
 BAN UNLOADING WHEN CARRYING THE GOAL CASK - Done
