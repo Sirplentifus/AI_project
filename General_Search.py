@@ -31,20 +31,14 @@ def General_Search(start_node):
             matches = [x for x in frontier if x==nodeChild];
             if(matches):
                 if(len(matches) > 1):
-                    raise(ValueError('Multiple matches in frontier - this should be impossible'));
+                    raise(ValueError('Multiple matches in frontier - this should not be impossible'));
                 
                 match = matches[0];
                 frontier.remove(match);
-                #~ matches.append(nodeChild);
                 
                 lowestCostNode = min([match, nodeChild], key = lambda node: node.FFunction());
                 
                 frontier.append(lowestCostNode);
-                
-                #Remove all matches except for the lowest-cost one
-                #~ for x in matches:
-                    #~ if(x != lowestCostNode):
-                        #~ frontier.remove(x);
 
                 
             else:
