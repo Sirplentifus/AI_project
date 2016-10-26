@@ -136,7 +136,7 @@ class InfiniteStacksHeuristic(GhostRobotHeuristic):
             if(not self.StackClosestToGoalStack or (Sid!=self.StackWithGoalCask and self.ShortestCostsToStacks[Sid][self.StackWithGoalCask] < self.ShortestCostsToStacks[self.StackClosestToGoalStack][self.StackWithGoalCask])):
                 self.StackClosestToGoalStack = Sid;
         
-        pdb.set_trace();    
+        #~ pdb.set_trace();    
             
         self.ShortestCostsToEXIT = self.GetLowestCosts(State, 'EXIT');
         
