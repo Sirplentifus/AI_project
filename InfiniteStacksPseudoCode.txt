@@ -2,8 +2,10 @@
 Infinite Stacks Heuristic:
     
     HeuristicPrep:
-        Create a dictionary with every stack as a key + one key which has the minimum cost to a stack without the goal cask. 
+        Create a dictionary with every stack as a key. 
             On each entry is a dictionary indexed by each node, wich has the cost to go from that node to the stack.
+        
+        Create a dictionary, like above, indexed by each node, wich has the cost to go from that node to the EXIT.
         
         Find the stack with the goal cask [DONE IN PREVIOUS HEURISTIC]
     
@@ -13,13 +15,15 @@ Infinite Stacks Heuristic:
                   + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
                   + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
                   + cost to move to exit (with the goal cask)
+        
         If robot is carrying a cask which is not the goal cask:
             HCost = cost to unload the cask being carried [DONE IN PREVIOUS HEURISTIC]
                   + cost to go to the nearest stack without the goal cask
-                  + cost to go to where the stack with the goal cask is 
+                  + cost to go to the stack with the goal cask from said stack
                   + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN PREVIOUS HEURISTIC]
                   + cost to move to and from the nearest stack (from the stack with goal cask) once per every cask above the goal cask 
                   + cost to move to exit (with the goal cask)
+        
         If robot is carrying the goal cask:
             HCost = cost to move to exit (with the goal cask);
 

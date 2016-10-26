@@ -6,10 +6,10 @@ def General_Search(start_node):
     frontier = [start_node];
     explored = [];
     
-    while(1):
+    while(True):
         assert frontier;
-        frontier = sorted(frontier, key = lambda node: node.FFunction(), reverse = True);
-        node = frontier.pop();
+        node = min(frontier, key = lambda node: node.FFunction());
+        frontier.remove(node);
         #~ pdb.set_trace();
         if(node.goalAchieved()):
             return node;
