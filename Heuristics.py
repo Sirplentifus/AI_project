@@ -58,7 +58,7 @@ class InfiniteStacksHeuristic(TeleportingRobotHeuristic):
     def GetLowestCosts(self, State, MapNode):
         ShortestCostsToMapNode = dict();
         
-        pdb.set_trace();
+        #~ pdb.set_trace();
         
         for node in State.World:
             ShortestCostsToMapNode[node] = float('inf');

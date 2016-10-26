@@ -53,10 +53,6 @@ class state(genericState):
     OpToThis = operation(); #Operation that went from father state to this state - POSSIBLY USELESS
     OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
     
-     
-    
-    
-    
     
     #initializes from file if a file_handle is specified
     def __init__(self, fileHandle=None, GoalCask='', newHeuristicObj = DefaultHeuristic()):
@@ -244,17 +240,11 @@ class state(genericState):
         
         self.OpToThis = op;
         self.GCost = self.GCost+OpCost;
-<<<<<<< HEAD
-    
+
     #Returns a list of all the possible operations in this state
     #If the robot is carrying the goal cask, it is never advantageous to
     #unload it, so this operation was BANNED
     def possibleOps(self): 
-=======
-                        
-    #Implements abstract function that returns a list of all possible abstract operations
-    def possibleOps(self): #Returns a list of all the possible operations in this state
->>>>>>> cd3cc0fca5e9c296772bb07267a7c7464d20875b
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
         ret = [];

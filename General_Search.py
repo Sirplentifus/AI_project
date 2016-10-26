@@ -8,16 +8,13 @@ def General_Search(start_node):
     
     while(True):
         assert frontier;
-<<<<<<< HEAD
+        
+        #Get the node with the lowest F cost... 
         node = min(frontier, key = lambda node: node.FFunction());
+        #...and remove it from the frontier
         frontier.remove(node);
         #~ pdb.set_trace();
-=======
-        #Sort from greatest to lowest f-function
-        frontier = sorted(frontier, key = lambda node: node.FFunction(), reverse = True);
-        #Pop gets the last element, hence the lowest cost
-        node = frontier.pop();
->>>>>>> cd3cc0fca5e9c296772bb07267a7c7464d20875b
+
         if(node.goalAchieved()):
             return node;
         #Add current node to explored nodes list
@@ -33,16 +30,21 @@ def General_Search(start_node):
             #Checking if the child node is in the frontier, in which case the node with the lowest GCost is kept there
             matches = [x for x in frontier if x==nodeChild];
             if(matches):
-                matches.append(nodeChild);
+                if(len(matches) > 1):
+                    raise(ValueError('Multiple matches in frontier - this should be impossible'));
                 
-                lowestCostNode = min(matches, key = lambda node: node.FFunction());
+                match = matches[0];
+                frontier.remove(match);
+                #~ matches.append(nodeChild);
                 
-                frontier.append(nodeChild);
+                lowestCostNode = min([match, nodeChild], key = lambda node: node.FFunction());
+                
+                frontier.append(lowestCostNode);
                 
                 #Remove all matches except for the lowest-cost one
-                for x in matches:
-                    if(x != lowestCostNode):
-                        frontier.remove(x);
+                #~ for x in matches:
+                    #~ if(x != lowestCostNode):
+                        #~ frontier.remove(x);
 
                 
             else:
