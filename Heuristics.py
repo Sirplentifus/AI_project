@@ -106,8 +106,12 @@ class InfiniteStacksHeuristic(TeleportingRobotHeuristic):
         
         if(not State.RobotCask):
             HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][State.RobotPosition];
+        
+        if(State.RobotCask == State.GoalCask):
+            HCost += self.ShortestCostsToEXIT[State.RobotPosition]*(1+State.CasksProps[State.GoalCask].Weight);
+        else:
+            HCost += self.ShortestCostsToEXIT[self.StackWithGoalCask]*(1+State.CasksProps[State.GoalCask].Weight);
             
-        HCost += self.ShortestCostsToEXIT[State.RobotPosition]*(1+State.CasksProps[State.GoalCask].Weight);
         
         return HCost;
             
