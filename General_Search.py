@@ -31,7 +31,7 @@ def General_Search(start_node):
             matches = [x for x in frontier if x==nodeChild];
             if(matches):
                 if(len(matches) > 1):
-                    raise(ValueError('Multiple matches in frontier - this should not be impossible'));
+                    raise(ValueError('Multiple matches in frontier - this should not be possible'));
                 
                 match = matches[0];
                 frontier.remove(match);

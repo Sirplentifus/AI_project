@@ -22,7 +22,7 @@ Infinite Stacks Heuristic:
             HCost = cost to unload the cask being carried [DONE IN TELPORTING ROBOT]
                 
                   + cost to go to the nearest stack without the goal cask       \
-                  + cost to go to the stack with the goal cask from said stack  |- This part is wrong - it can overestimate the cost. I will not be implemented for now
+                  + cost to go to the stack with the goal cask from said stack  |- This part is wrong - it can overestimate the cost. It will not be implemented for now
                   
                   + cost to load + unload all the casks above the goal cask + cost to load the goal cask [DONE IN TELPORTING ROBOT]
                   

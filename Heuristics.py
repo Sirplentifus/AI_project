@@ -36,7 +36,7 @@ class TeleportingRobotHeuristic:
             if(Cid == State.GoalCask):
                 GoalCaskMoved = False;
                 break;
-            HCost = HCost + (1 + State.CasksProps[Cid].Weight)*2;
+            HCost +=  (1 + State.CasksProps[Cid].Weight)*2;
         
         if(GoalCaskMoved):
             raise(ValueError('The goal cask was moved to a different stack - this should not have happened'));
@@ -102,12 +102,16 @@ class GhostRobotHeuristic(TeleportingRobotHeuristic):
         HCost = 0;
         #~ pdb.set_trace();
         
+        #If a robot is not carrying any cask, it will eventually have to go to the stack which has the goal stack. The minimum possible cost for this is computed
         if(not State.RobotCask):
             HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][State.RobotPosition];
         
+        
         if(State.RobotCask == State.GoalCask):
+            #If the robot is carrying the goal cask, it will have to go to EXIT. No other action makes sense, so the minimum cost to EXIT is computed.
             HCost += self.ShortestCostsToEXIT[State.RobotPosition]*(1+State.CasksProps[State.GoalCask].Weight);
         else:
+            #If the robot is carryng another cask, or no cask, it will eventually have to carry the GoalCask to the EXIT, so this cost is computed.
             HCost += self.ShortestCostsToEXIT[self.StackWithGoalCask]*(1+State.CasksProps[State.GoalCask].Weight);
             
         
@@ -164,9 +168,10 @@ class InfiniteStacksHeuristic(GhostRobotHeuristic):
             if(Cid == State.GoalCask):
                 GoalCaskMoved = False;
                 break;
+            
             HCost += (1 + State.CasksProps[Cid].Weight)* (2 + 2*self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack]);
             #                        Loading & Unloading -^                  ^ 
-            #      Carrying the casks from the StackWithGoalCask to the StackClosestToGoalStack and vice-versa
+            #      Carrying (movement) the casks from the StackWithGoalCask to the StackClosestToGoalStack and vice-versa
             
         if(GoalCaskMoved):
             raise(ValueError('The goal cask was moved to a different stack - this should not have happened'));

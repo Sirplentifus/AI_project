@@ -1,7 +1,11 @@
-* Heuristics 1, 2 and 3
-* F-cost function, expand in domain-independent part
-* Lots of TODOs
+
 * Create test script
     * Open nodes
     * Max depth of solution
 * Output redirection
+
+* remove "POSSIBLY USELESS" comment or the possibly useless part
+* Remove MoveTo function
+* Remove solved?: True
+
+* Delete this file when done
