@@ -1,4 +1,5 @@
 
+
 class DefaultHeuristic:
     def HeuristicPrep(self, State):
         pass;
@@ -40,6 +41,7 @@ class genericState:
             newState = self.copy();
             newState.applyOp(AllOps[i]);
             ChildStates.append(newState);
+        
         return ChildStates;
     
     #Abstract function that determines whether the goal has been achieved

@@ -10,5 +10,4 @@ initialState = state(fh, sys.argv[2]);
 solution = General_Search(initialState);
 
 print(solution.allOpsToThis());
-print('problem solved?: %s'%solution.goalAchieved());
 

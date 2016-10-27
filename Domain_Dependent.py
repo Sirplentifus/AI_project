@@ -50,7 +50,7 @@ class state(genericState):
     RobotCask = ''; #Empty string denotes lack of cask
     
     GoalCask = ''; #Cask that is to be moved to EXIT node
-    OpToThis = operation(); #Operation that went from father state to this state - POSSIBLY USELESS
+    OpToThis = operation(); #Operation that went from father state to this state
     OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
     
     
@@ -270,19 +270,19 @@ class state(genericState):
         return (self.Stacks==other.Stacks) and (self.RobotPosition==other.RobotPosition);
     
     
-#TODO REMOVE
+#TESTING / DEBUGGING
 #The following function is just a convenience for testing, and should not be used by the problem solving algortihm
 #It moves to a specified Node destination. If it's not possible to go there, an exception will be raised of "the index out of bounds" kind
-def MoveTo(FirstState, Destination):
-    AffectedState = FirstState.copy();
+#~ def MoveTo(FirstState, Destination):
+    #~ AffectedState = FirstState.copy();
     
-    if(Destination == 'LOAD'):
-        AffectedState.applyOp(operation('LOAD'));
-    elif(Destination == 'UNLOAD'):
-        AffectedState.applyOp(operation('UNLOAD'));
-    else:
-        possible_edges = AffectedState.World[AffectedState.RobotPosition];
-        OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == Destination]
-        AffectedState.applyOp(operation('MOVE', OpDest[0]));
+    #~ if(Destination == 'LOAD'):
+        #~ AffectedState.applyOp(operation('LOAD'));
+    #~ elif(Destination == 'UNLOAD'):
+        #~ AffectedState.applyOp(operation('UNLOAD'));
+    #~ else:
+        #~ possible_edges = AffectedState.World[AffectedState.RobotPosition];
+        #~ OpDest = [i for i in range(0,len(possible_edges)) if possible_edges[i].IDto == Destination]
+        #~ AffectedState.applyOp(operation('MOVE', OpDest[0]));
         
-    return AffectedState;
+    #~ return AffectedState;

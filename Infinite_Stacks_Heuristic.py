@@ -11,4 +11,3 @@ initialState = state(fh, sys.argv[2], InfiniteStacksHeuristic());
 solution = General_Search(initialState);
 
 print(solution.allOpsToThis());
-print('problem solved?: %s'%solution.goalAchieved());

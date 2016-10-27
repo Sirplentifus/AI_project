@@ -1,10 +1,12 @@
 from Domain_Dependent import *;
 import pdb; #To use for debugging
 
+
 #Solves the problem using an uninformed uniform cost search - always expanding the lowest cost node
 def General_Search(start_node):
     frontier = [start_node];
     explored = [];
+    
     
     while(True):
         assert frontier;
@@ -16,6 +18,7 @@ def General_Search(start_node):
         #~ pdb.set_trace();
 
         if(node.goalAchieved()):
+            print('\nNumber of nodes created: %d\n'%( len(explored) + len(frontier) + 1));
             return node;
         #Add current node to explored nodes list
         explored.append(node);
@@ -43,3 +46,4 @@ def General_Search(start_node):
                 
             else:
                 frontier.append(nodeChild);
+    

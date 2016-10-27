@@ -169,9 +169,12 @@ class InfiniteStacksHeuristic(GhostRobotHeuristic):
                 GoalCaskMoved = False;
                 break;
             
-            HCost += (1 + State.CasksProps[Cid].Weight)* (2 + 2*self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack]);
+            HCost += (1 + State.CasksProps[Cid].Weight)* (2 + 1*self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack]);
             #                        Loading & Unloading -^                  ^ 
-            #      Carrying (movement) the casks from the StackWithGoalCask to the StackClosestToGoalStack and vice-versa
+            #      Carrying (movement) the casks from the StackWithGoalCask to the StackClosestToGoalStack
+            
+            HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack];
+            #  ^   Moving back from the StackClosestToGoalStack to the StackWithGoalCask
             
         if(GoalCaskMoved):
             raise(ValueError('The goal cask was moved to a different stack - this should not have happened'));

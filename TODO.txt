@@ -1,11 +1,4 @@
-
-* Create test script
-    * Open nodes
-    * Max depth of solution
-* Output redirection
-
-* remove "POSSIBLY USELESS" comment or the possibly useless part
-* Remove MoveTo function
-* Remove solved?: True
+* Run the one that takes ~2h
+* Remove the printing of the number of nodes opened
 
 * Delete this file when done
