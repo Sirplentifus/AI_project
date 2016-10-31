@@ -9,7 +9,9 @@ class DefaultHeuristic:
 
 class genericState:
     
-    #the parent to this node. Made in copy function. Not represented due to recursion.
+    #the parent to this node. Made in copy function. This value is not printed, 
+    #in order not to spam the console due to the unwinding of all the nodes 
+    #up to the root node.
     parent = None;
     
     GCost = 0;

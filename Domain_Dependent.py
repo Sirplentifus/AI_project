@@ -72,9 +72,9 @@ class state(genericState):
                 break;
             if(line_str.isspace()):
                 continue;
-            elif(line_str[0] == 'C'):
+            elif(line_str[0] == 'C'): #Create a Cask
                 self.CasksProps[params[0]] = cask(int(params[1]), float(params[2]));
-            elif(line_str[0] == 'S'):
+            elif(line_str[0] == 'S'): #Create a Stack
                 S = stack(int(params[1]));
                 self.Stacks[params[0]] = S;
                 self.World.setdefault(params[0], []);
@@ -83,7 +83,7 @@ class state(genericState):
                     S.Casks.append(params[i]); #LeftOverLength's for all stacks have to be updated later
                 
                 
-            elif(line_str[0] == 'E'):
+            elif(line_str[0] == 'E'): #Create an edgeTo in each node connected by this edge
                 NodeLeftID = params[1];
                 NodeRightID = params[2];
                 Cost = float(params[3]);
@@ -207,21 +207,25 @@ class state(genericState):
     def applyOp(self, op): 
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
+            #Check if destination node ID is within known bounds
             if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
                 raise(ValueError('Invalid op - invalid op.Dest'));
             
-            self.OpToThis_str = 'move %s '%(self.RobotPosition)
+            self.OpToThis_str = 'move %s '%(self.RobotPosition) #Human-readable text generation
             DestinationEdge = (self.World[self.RobotPosition])[op.Dest];
             self.RobotPosition = DestinationEdge.IDto;
             
-            if(self.RobotCask):
+            if(self.RobotCask): #If cask is being carried
                 OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
             else:
                 OpCost = 1;    
-            OpCost = OpCost*DestinationEdge.Length;
+            OpCost = OpCost*DestinationEdge.Length; #Multiply normalized cost by path cost factor
             
+            #Finish the human-readable text line by adding the movement parameters
             self.OpToThis_str = self.OpToThis_str + '%s %f'%(self.RobotPosition, OpCost);
         elif(op.OpType == 'LOAD'):
+            
+            #LOAD cannot be performed outside of a stack node or when already loaded with a cask
             if(self.RobotPosition[0] != 'S'):
                 raise(ValueError('Invalid op - cannot load while not on a stack node'));
                             
@@ -230,9 +234,12 @@ class state(genericState):
                 
             self.RobotCask = self.removeFromStack(self.RobotPosition);
             OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
+            #Human-readable string generation
             self.OpToThis_str = 'load %s %s %f'%(self.RobotCask, self.RobotPosition, OpCost);
             
         elif(op.OpType == 'UNLOAD'):
+            
+            #LOAD cannot be performed outside of a stack node or when not loaded with a cask
             if(self.RobotPosition[0] != 'S'):
                 raise(ValueError('Invalid op - cannot unload while not on a stack node'));
             
@@ -240,6 +247,7 @@ class state(genericState):
                 raise(ValueError('Invalid op - cannot unload while not carrying any cask'));
             
             OpCost = 1 + self.CasksProps[self.RobotCask].Weight;
+            #Human-readable string generation
             self.OpToThis_str = 'unload %s %s %f'%(self.RobotCask, self.RobotPosition, OpCost);    
             self.insertToStack(self.RobotPosition, self.RobotCask);
             self.RobotCask = '';
@@ -263,7 +271,10 @@ class state(genericState):
         
         #If on a stack,
         if(self.RobotPosition[0] == 'S'):
-            #UNLOAD is possible if carrying a cask, there is enough space in the stack, and that cask is not the goal cask
+            #UNLOAD is possible if carrying a cask, there is enough space in the stack, 
+            #and that cask is not the goal cask.
+            #Unloading goal casks is forbidden, as an optimization (once the goal cask is loaded, 
+            #the problem simplifies to finding the path to the EXIT)
             if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= self.CasksProps[self.RobotCask].Length and self.RobotCask!=self.GoalCask):
                 ret.append(operation('UNLOAD'));
             #LOAD is possible if there is a cask to load, and no cask is being carried    

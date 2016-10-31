@@ -1,4 +1,13 @@
-import os;
 import sys;
 
-os.system("python3 Infinite_Stacks_Heuristic.py %s %s"%(sys.argv[1], sys.argv[2]));
+from Domain_Dependent import *;
+from General_Search import *;
+from Heuristics import InfiniteStacksHeuristic;
+
+
+fh = open(sys.argv[1],'r');
+
+initialState = state(fh, sys.argv[2], InfiniteStacksHeuristic());
+solution = General_Search(initialState);
+
+print(solution.allOpsToThis());
