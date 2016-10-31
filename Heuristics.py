@@ -1,4 +1,4 @@
-import pdb;
+#~ import pdb;
 
 
 class TeleportingRobotHeuristic:
@@ -102,7 +102,8 @@ class GhostRobotHeuristic(TeleportingRobotHeuristic):
         HCost = 0;
         #~ pdb.set_trace();
         
-        #If a robot is not carrying any cask, it will eventually have to go to the stack which has the goal stack. The minimum possible cost for this is computed
+        #If a robot is not carrying any cask, it will eventually have to go to the 
+        #stack which has the goal stack. The minimum possible cost for this is computed
         if(not State.RobotCask):
             HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][State.RobotPosition];
         
@@ -137,7 +138,10 @@ class InfiniteStacksHeuristic(GhostRobotHeuristic):
         
         
         for Sid in State.Stacks:
-            if(not self.StackClosestToGoalStack or (Sid!=self.StackWithGoalCask and self.ShortestCostsToStacks[Sid][self.StackWithGoalCask] < self.ShortestCostsToStacks[self.StackClosestToGoalStack][self.StackWithGoalCask])):
+            if(not self.StackClosestToGoalStack or (Sid!=self.StackWithGoalCask \
+                and self.ShortestCostsToStacks[Sid][self.StackWithGoalCask] <  \
+                self.ShortestCostsToStacks[self.StackClosestToGoalStack][self.StackWithGoalCask])):
+                
                 self.StackClosestToGoalStack = Sid;
         
         #~ pdb.set_trace();    
@@ -169,12 +173,14 @@ class InfiniteStacksHeuristic(GhostRobotHeuristic):
                 GoalCaskMoved = False;
                 break;
             
-            HCost += (1 + State.CasksProps[Cid].Weight)* (2 + 1*self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack]);
-            #                        Loading & Unloading -^                  ^ 
+            #This is the part that is different in this heuristic:
+            HCost += (1 + State.CasksProps[Cid].Weight)* \
+                (2 + self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack]);
+            #    ^- Loading & Unloading                 ^ 
             #      Carrying (movement) the casks from the StackWithGoalCask to the StackClosestToGoalStack
             
             HCost += self.ShortestCostsToStacks[self.StackWithGoalCask][self.StackClosestToGoalStack];
-            #  ^   Moving back from the StackClosestToGoalStack to the StackWithGoalCask
+            #     ^- Moving back from the StackClosestToGoalStack to the StackWithGoalCask
             
         if(GoalCaskMoved):
             raise(ValueError('The goal cask was moved to a different stack - this should not have happened'));

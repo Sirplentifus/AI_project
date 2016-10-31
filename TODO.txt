@@ -1,4 +1,0 @@
-* Run the one that takes ~2h
-* Remove the printing of the number of nodes opened
-
-* Delete this file when done

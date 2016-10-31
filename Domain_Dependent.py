@@ -1,7 +1,8 @@
 import copy
 from Domain_Independent import *;
 
-class cask: #describes a cask
+#describes a cask
+class cask: 
     
     def __init__(self, newLength=0, newWeight=0):
         self.Length = newLength;
@@ -10,7 +11,8 @@ class cask: #describes a cask
     def __repr__(self):
         return '<Length: %d, Weight: %g>'%(self.Length, self.Weight);
 
-class stack: #Describes a stack and the IDs of the casks it contains
+#Describes a stack and the IDs of the casks it contains
+class stack: 
     
     def __init__(self, newMaxLength):
         self.MaxLength = newMaxLength;
@@ -24,7 +26,8 @@ class stack: #Describes a stack and the IDs of the casks it contains
     def __eq__(self, other):
         return self.Casks == other.Casks;
         
-class operation: #describes any valid state changing operation
+#describes any valid state changing operation
+class operation: 
     
     def __init__(self, newOpType='', newDest = -1):
         self.OpType = newOpType; #Describes the type of operation. Can be 'MOVE', 'LOAD' or 'UNLOAD'
@@ -33,7 +36,8 @@ class operation: #describes any valid state changing operation
     def __repr__(self):
         return '<OpType: %s, Dest: %d>'%(self.OpType, self.Dest);
 
-class edgeTo: #represents a connection. Only makes sense when a member of a map node
+#represents a connection. Only makes sense when a member of a map node
+class edgeTo: 
     def __init__(self, newIDto='', newLength=0):
         self.IDto = newIDto;
         self.Length = newLength;
@@ -41,6 +45,7 @@ class edgeTo: #represents a connection. Only makes sense when a member of a map 
     def __repr__(self):
         return '<IDto: %s, Length: %g>'%(self.IDto, self.Length);
 
+#Represents the state. 
 class state(genericState):
     CasksProps = dict(); #dictionary with all the casks' properties, indexed by their ID strings
     Stacks = dict(); #dictionary of all the stacks indexed by their ID strings
@@ -51,7 +56,8 @@ class state(genericState):
     
     GoalCask = ''; #Cask that is to be moved to EXIT node
     OpToThis = operation(); #Operation that went from father state to this state
-    OpToThis_str = '';#Operation that went from father state to this state in a form that is more readable and compatible with the output format
+    OpToThis_str = '';#Operation that went from father state to this state in a 
+    #form that is compatible with the output format
     
     
     #initializes from file if a file_handle is specified
@@ -75,7 +81,6 @@ class state(genericState):
                 
                 for i in range(2, len(params)):
                     S.Casks.append(params[i]); #LeftOverLength's for all stacks have to be updated later
-                    #self.insertToStack(params[0], params[i]); #Can't use this - makes errors if casks appear after stacks in which they are
                 
                 
             elif(line_str[0] == 'E'):
@@ -121,7 +126,8 @@ class state(genericState):
         if(self.CasksProps.get(self.GoalCask) == None):
             raise(ValueError('The cask to be retrieved isn\'t wasn\'t defined'));
         
-        #Checking if the stacks are connected to some other node. If an unconnected node is found, a warning is printed, unless it contains the goalCask, in which case an exception is raised.
+        #Checking if the stacks are connected to some other node. If an unconnected node is found, 
+        #a warning is printed, unless it contains the goalCask, in which case an exception is raised.
         for Sid in self.Stacks:
             if( not self.World.get(Sid) ):
                 if( self.Stacks[Sid].Casks.count(self.GoalCask) == 1 ):
@@ -142,10 +148,11 @@ class state(genericState):
             
     def __repr__(self):
         HCost = self.HeuristicObj.HCost(self);
-        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g, HCost: %g, FCost: %g\n Stacks: %s>'%(self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, HCost, self.FFunction(), self.Stacks);
+        return'<RobotPosition:%s,\n RobotCask:%s,\n OpToThis: %s,\n GCost: %g, HCost: %g, FCost: %g\n Stacks: %s>'%\
+        (self.RobotPosition, self.RobotCask, self.OpToThis_str, self.GCost, HCost, self.FFunction(), self.Stacks);
     
-    #Implements abstract function to get the current branch of the node tree
-    def allOpsToThis(self): #Returns a string which represents all the operations that lead to this node, from the initial state (marked has having OpToThis_str as an empty string)
+    #Returns a string which represents all the operations that lead to this node, from the initial state (marked as having OpToThis_str as an empty string)
+    def allOpsToThis(self): 
         this_node = self;
         ret = '%f\n'%this_node.GCost;
         
@@ -155,7 +162,7 @@ class state(genericState):
             
         return ret;
     
-    #Implements abstract function to copy a node
+    #Copies a node. Some things have to be copied by value, while others should be copied by reference
     def copy(self):
         ret = state();
         ret.RobotPosition = self.RobotPosition
@@ -167,10 +174,11 @@ class state(genericState):
         ret.OpToThis = self.OpToThis;
         ret.parent = self; #Setting the reference to the new state's parent
         ret.GCost = self.GCost;
-        ret.HeuristicObj = self.HeuristicObj
+        ret.HeuristicObj = self.HeuristicObj;
         return ret;
-        
-    def insertToStack(self, StackID, CaskID): #Insert a cask to a stack. Raises exception if it doesn't fit
+    
+    #Insert a cask to a stack. Raises exception if it doesn't fit
+    def insertToStack(self, StackID, CaskID): 
         C = self.CasksProps[CaskID];
         S = self.Stacks[StackID];
         
@@ -181,7 +189,8 @@ class state(genericState):
         S.LeftOverLength = S.LeftOverLength - C.Length;
         S.Casks.append(CaskID);
     
-    def removeFromStack(self, StackID): #removes a cask from a stack, and returns its ID string. Raises exception if it's empty
+    #removes a cask from a stack, and returns its ID string. Raises exception if it's empty
+    def removeFromStack(self, StackID): 
         S = self.Stacks[StackID];
         
         if(not S.Casks):
@@ -194,8 +203,8 @@ class state(genericState):
         
         return CaskID;
         
-    #Implements abstract function to apply an abstract operation
-    def applyOp(self, op): #Applies an operation to a state. Raises exception if it's not a valid operation.
+    #Applies an operation to a state. Raises exception if it's not a valid operation.
+    def applyOp(self, op): 
         if(op.OpType == 'MOVE'):
             moveInd = op.Dest;
             if(moveInd<0 or moveInd>=len(self.World[self.RobotPosition])):
@@ -248,13 +257,16 @@ class state(genericState):
         EdgeList = self.World[self.RobotPosition];
         N = len(EdgeList);
         ret = [];
+        #Movements to all adjencent nodes
         for i in range(0,N):
             ret.append(operation('MOVE', i));
         
-        
+        #If on a stack,
         if(self.RobotPosition[0] == 'S'):
+            #UNLOAD is possible if carrying a cask, there is enough space in the stack, and that cask is not the goal cask
             if(self.RobotCask and self.Stacks[self.RobotPosition].LeftOverLength >= self.CasksProps[self.RobotCask].Length and self.RobotCask!=self.GoalCask):
                 ret.append(operation('UNLOAD'));
+            #LOAD is possible if there is a cask to load, and no cask is being carried    
             elif(self.Stacks[self.RobotPosition].Casks and not self.RobotCask):
                 ret.append(operation('LOAD'));
         
